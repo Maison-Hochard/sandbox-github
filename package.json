@@ -1,0 +1,25 @@
+{
+  "name": "node-script-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "start": "node script.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^7.2.0",
+    "console-stamp": "^3.0.3",
+    "dayjs": "^1.10.6",
+    "dotenv": "^16.0.3",
+    "hogan.js": "^3.0.2",
+    "inline-css": "^3.0.0",
+    "mysql2": "^2.2.5",
+    "nodemailer": "^6.6.3"
+  },
+  "devDependencies": {
+    "jsdom": "^16.7.0",
+    "jsdom-global": "^3.0.2"
+  }
+}

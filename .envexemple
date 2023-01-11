@@ -1,0 +1,4 @@
+MAIL_HOST=test.test.com
+MAIL_PORT=587
+MAIL_USER=test@test.com
+MAIL_PASS=123456
