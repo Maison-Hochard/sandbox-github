@@ -1,4 +1,3 @@
-MAIL_HOST=test.test.com
-MAIL_PORT=587
-MAIL_USER=test@test.com
-MAIL_PASS=123456
+GITHUB_TOKEN=your_token
+GITHUB_OWNER=your_user
+GITHUB_REPO=repository

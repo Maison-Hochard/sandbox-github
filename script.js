@@ -2,71 +2,60 @@ require('console-stamp')(console, 'yyyy-mm-dd HH:MM:ss');
 require('dotenv').config();
 
 const commander = require("commander");
-const mysql = require('mysql2/promise');
-const dayjs = require('dayjs');
-const nodemailer = require('nodemailer'),
-    fs = require('fs'),
-    hogan = require('hogan.js'),
-    inlineCss = require('inline-css');
+const {Octokit} = require("octokit");
 
 commander
     .version("1.0.0")
     .usage('[options]')
-    .option('-e, --env <mode>', 'Select script environment: local, preprod or production')
+    .option('-t, --title <title>', 'Title of the branch')
     .parse(process.argv);
 
 const program = commander.opts();
-const transporter = nodemailer.createTransport({
-    host: process.env.MAIL_HOST,
-    port: process.env.MAIL_PORT,
-    secure: false,
-    auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-    },
+
+const octokit = new Octokit({
+    auth: process.env.GITHUB_TOKEN,
 });
 
-async function send_email() {
-    try {
-        const templateFile = fs.readFileSync(__dirname + "/template/template.html");
-        const templateStyled = await inlineCss(templateFile.toString(), {url: "file://" + __dirname + "/template/"});
-        const templateCompiled = hogan.compile(templateStyled);
-        const templateRendered = templateCompiled.render(
-            {
-                name: "your name"
-            });
-        const emailData = {
-            to: [
-                "youremail@test.com"
-            ],
-            from: 'your name',
-            subject: "test",
-            html: templateRendered
-        };
-        await transporter.sendMail(emailData);
-    } catch (e) {
-        console.error(e);
-    }
+const getBranches = async () => {
+    const response = await octokit.request('GET /repos/{owner}/{repo}/branches', {
+        owner: process.env.GITHUB_OWNER,
+        repo: process.env.GITHUB_REPO,
+    });
+    return response.data;
 }
 
-// request exemple
-/*async function getSitesList(connection) {
-    const [rows] = await connection.execute('SELECT id, login FROM table WHERE enabled = 1');
-    return rows;
-}*/
+const checkBranchName = (branchName, branches) => {
+    return branches.find(branch => branch.name === branchName);
+}
+
+const getLatestCommitOnMaster = async (branches) => {
+    const branch = branches.find(branch => branch.name === 'master');
+    const response = await octokit.request('GET /repos/{owner}/{repo}/commits/{ref}', {
+        owner: process.env.GITHUB_OWNER,
+        repo: process.env.GITHUB_REPO,
+        ref: branch.commit.sha,
+    });
+    return response.data;
+}
 
 async function launchScript() {
-    // in case of db connection
-    /*const connection = await mysql.createConnection({
-        host: (program.env && program.env === "production")
-            ? 'your_ip'
-            : ((program.env && program.env === "preprod")
-                ? 'your_ip'
-                : 'localhost'),
-        user: 'master',
-        password: 'password'
-    });*/
-    await send_email()
+    const branchName = program.title;
+    const branches = await getBranches();
+    const branch = checkBranchName(branchName, branches);
+    if (branch) {
+        console.log("Branch already exists");
+        return false;
+    }
+    const latestCommitOnMaster = await getLatestCommitOnMaster(branches);
+    console.log("Creating branch : " + branchName);
+    const response = await octokit.request('POST /repos/{owner}/{repo}/git/refs', {
+        owner: process.env.GITHUB_OWNER,
+        repo: process.env.GITHUB_REPO,
+        ref: `refs/heads/${branchName}`,
+        sha: latestCommitOnMaster.sha,
+    });
+    console.log("Response", response);
+    console.log("Branch created !!!");
 }
 
 launchScript()
