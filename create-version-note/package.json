@@ -1,15 +1,16 @@
 {
-  "name": "create-branch-script",
+  "name": "node-script-template",
   "version": "1.0.0",
   "description": "",
   "main": "script.js",
   "scripts": {
-    "start": "node script.js"
-    "start-test": "node script.js -t 'feature/test'"
+    "start": "node script.js",
+    "start-arg": "node script.js -t test -v 1.0.0"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.2.2",
     "commander": "^7.2.0",
     "console-stamp": "^3.0.3",
     "dotenv": "^16.0.3",
