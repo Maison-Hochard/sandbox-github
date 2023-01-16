@@ -67,3 +67,36 @@ launchScript()
         console.log("Script failed: " + e);
         process.exit();
     });
+
+
+// const getVersion = async () => {
+//     const response = await octokit.request('GET /repos/{owner}/{repo}/releases/latest', {
+//         owner: process.env.GITHUB_OWNER,
+//         repo: process.env.GITHUB_REPO
+//     })
+//     return response.data.tag_name;
+// }
+// const newVersion = (version, versionSent) => {
+//
+//     // if (compare(versionSent, version) === 1) {
+//     //     return versionSent;
+//     // }
+//     // else {
+//     //     version = inc(version, 'patch');
+//     //     return version;
+//     // }
+// }
+//
+//
+// async function launchScript() {
+//     console.log("Launching script");
+//     //let versionSent = options.version;
+//     // get the version to the latest release
+//     //let version = await getVersion();
+//     // check if the version is the same as the one in the release else create a new version
+//     //version = await newVersion(version, versionSent);
+//     //console.log("version", version);
+//     const release = await createRelease();
+//     console.log(release);
+//     console.log("Release created !!!");
+// }

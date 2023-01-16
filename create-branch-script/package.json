@@ -4,7 +4,7 @@
   "description": "",
   "main": "script.js",
   "scripts": {
-    "start": "node script.js"
+    "start": "node script.js",
     "start-test": "node script.js -t 'feature/test'"
   },
   "author": "",

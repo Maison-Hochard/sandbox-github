@@ -1,40 +1,72 @@
 require('console-stamp')(console, 'yyyy-mm-dd HH:MM:ss');
 require('dotenv').config();
-
-const commander = require("commander");
-const axios = require('axios');
+const {compare, inc} = require("semver");
 const {Octokit} = require("octokit");
+const { Command } = require('commander');
+const program = new Command();
 
-commander
-    .version("1.0.0")
+console.log(process.env.GITHUB_TOKEN);
+console.log(process.env.GITHUB_OWNER);
+console.log(process.env.GITHUB_REPO);
+
+program
     .usage('[options]')
-    .option('-v, --version <version>', '1.0.0')
     .option('-t, --title <title>', 'Title of the release')
+    .option('-v, --version <version>', 'Version of the release')
     .parse(process.argv);
 
-const program = commander.opts();
+
 
 const octokit = new Octokit({
     auth: process.env.GITHUB_TOKEN,
 });
 
-const createRelease = async () => {
+const options = program.opts();
+const createRelease = async (version) => {
+    console.log("Creating release");
     const response = await octokit.request('POST /repos/{owner}/{repo}/releases', {
         owner: process.env.GITHUB_OWNER,
         repo: process.env.GITHUB_REPO,
-        tag_name: program.version,
+        tag_name: version,
         target_commitish: 'master',
-        name: program.title,
+        name: options.title,
         body: 'Description of the release',
         draft: false,
         prerelease: false,
         generate_release_notes: false
     });
+    console.log("Response", response);
+    console.log(response.data);
     return response.data;
 }
 
+const getVersion = async () => {
+    const response = await octokit.request('GET /repos/{owner}/{repo}/releases/latest', {
+        owner: process.env.GITHUB_OWNER,
+        repo: process.env.GITHUB_REPO
+    })
+    return response.data.tag_name;
+}
+const newVersion = (version, versionSent) => {
+
+    if (compare(versionSent, version) === 1) {
+        return versionSent;
+    }
+    else {
+        version = inc(version, 'patch');
+        return version;
+    }
+}
+
+
 async function launchScript() {
-    const release = await createRelease();
+    console.log("Launching script");
+    let versionSent = options.version;
+    // get the version to the latest release
+    let version = await getVersion();
+    // check if the version is the same as the one in the release else create a new version
+    version = await newVersion(version, versionSent);
+    const release = await createRelease(version);
     console.log(release);
     console.log("Release created !!!");
 }
