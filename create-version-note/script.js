@@ -13,6 +13,8 @@ program
     .usage('[options]')
     .option('-t, --title <title>', 'Title of the release')
     .option('-v, --version <version>', 'Version of the release')
+    .option('-d, --draft <draft>', 'Draft of the release')
+    .option('-p, --description <description>', 'Prerelease of the release')
     .parse(process.argv);
 
 
@@ -30,8 +32,8 @@ const createRelease = async (version) => {
         tag_name: version,
         target_commitish: 'master',
         name: options.title,
-        body: 'Description of the release',
-        draft: false,
+        body: options.description ?? '',
+        draft: options.draft ? true : false,
         prerelease: false,
         generate_release_notes: false
     });

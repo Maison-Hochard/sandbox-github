@@ -5,7 +5,7 @@
   "main": "script.js",
   "scripts": {
     "start": "node script.js",
-    "start-arg": "node script.js -t 'zonzon3' -v 'v1.9.0'"
+    "start-arg": "node script.js -t 'truedraft' -v 'v1.9.0' -d true -p hzefhejfbnjdndnfjrdfn"
   },
   "author": "",
   "license": "ISC",
