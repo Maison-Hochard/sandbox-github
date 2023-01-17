@@ -4,8 +4,8 @@
   "description": "",
   "main": "script.js",
   "scripts": {
-    "start": "node script.js"
-    "start-test": "node script.js -t 'feature/test'"
+    "start": "node script.js",
+    "start-test": "node script.js -t 'feature/test' -d 'test description' -l 'test label'"
   },
   "author": "",
   "license": "ISC",
